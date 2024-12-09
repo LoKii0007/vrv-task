@@ -16,11 +16,12 @@ const Home = () => {
   const {activeView, setActiveView, activeBlog} = useGlobal();
   const {currentUser, setCurrentUser} = useAuth();
   const navigate = useNavigate();
+  const {baseUrl} = useGlobal()
 
   const fetchBlogs = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`http://localhost:3000/api/get-all-blogs`);
+      const res = await axios.get(`${baseUrl}/api/get-all-blogs`);
       if(res.status !== 200) {
         toast.error(res.data.msg || "Something went wrong");
       }else{
