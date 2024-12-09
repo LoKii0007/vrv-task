@@ -8,9 +8,10 @@ import { useEffect } from "react";
 const Navbar = () => {
 
   const [open, setOpen] = useState(false);
-  const {setActiveBlog, activeBlog} = useGlobal('all');
+  const {setActiveBlog, activeBlog, setActiveView} = useGlobal('all');
 
   const handleCategory = (category) => {
+    setActiveView('all')
     setActiveBlog(category);
   }
 

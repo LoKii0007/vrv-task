@@ -39,7 +39,7 @@ export default function ProfileDropdown() {
   return (
     <Menu as="div" className="relative inline-block text-left">
       <div>
-        <MenuButton className="flex w-full h-full items-center rounded-full justify-center bg-blue-400 p-1 shadow-sm ">
+        <MenuButton className="flex w-full h-full items-center rounded-full justify-center p-1 shadow-sm ">
           <img
             className="rounded-full w-6 h-6 "
             src={`${currentUser?.image ? currentUser.image : "/svg/user.svg"}`}

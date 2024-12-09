@@ -27,7 +27,7 @@ export default function Dropdown({blogId, setBlogs, setFilteredBlogs }) {
   return (
     <Menu as="div" className="relative inline-block text-left">
       <div>
-        <MenuButton className="flex w-full h-full items-center rounded-full justify-center bg-blue-400 p-1 shadow-sm ">
+        <MenuButton className="flex w-full h-full items-center rounded-full justify-center bg-red-300 p-1 shadow-sm ">
             <img src="/svg/edit.svg" alt="" />
         </MenuButton>
       </div>
