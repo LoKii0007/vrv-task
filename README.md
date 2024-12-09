@@ -47,7 +47,7 @@ This project is a full-stack blog website where users can create, update, and de
 
 #### 1. Clone the repository
 ```bash
-git clone https://github.com/yourusername/your-repo.git
+git clone https://github.com/LoKii0007/vrv-task.git
 cd your-repo
 ```
 
