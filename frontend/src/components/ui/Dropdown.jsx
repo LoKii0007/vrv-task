@@ -1,20 +1,23 @@
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { useGlobal } from "../../hooks/global";
 
-export default function Dropdown({blogId, blogs, setBlogs}) {
+export default function Dropdown({blogId, setBlogs, setFilteredBlogs }) {
+
+  const { baseUrl } = useGlobal();
 
     const handleDelete = async () => {
         try{
-            console.log(blogId);
-            const res = await axios.delete(`http://localhost:3000/api/delete-blog`, {
-                withCredentials: true, params: {blogId}
+            const res = await axios.delete(`${baseUrl}/delete-blog`,{data : {blogId} ,
+                withCredentials: true, validateStatus : (status) => status < 500
             });
             if(res.status !== 200){
                 toast.error(res.data.msg || "Blog deletion failed");
             }else{
                 toast.success("Blog deleted successfully");
-                setBlogs(blogs.filter(blog => blog._id !== blogId));
+                setBlogs((prevBlogs) => prevBlogs.filter(blog => blog._id !== blogId));
+                setFilteredBlogs((prevBlogs) => prevBlogs.filter(blog => blog._id !== blogId));
             }
         }catch(error){
             toast.error(error.response.data.msg || "Server Error");

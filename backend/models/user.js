@@ -28,7 +28,7 @@ const schema = new mongoose.Schema({
   },
   permissions: {
     type: [String],
-    enum: ["createBlog", "updateBlog", "deleteBlog", 'deleteUser', 'updateUser', 'createUser', 'updateUserPermissions', 'createSuperUser', 'updateSuperUserPermissions', 'deleteSuperUser', 'deleteOtherBlogs'],
+    enum: ["createBlog", "updateBlog", "deleteBlog", 'deleteOtherBlogs', 'deleteUsers','updateUser', 'createUser', 'updateUserPermissions', 'createSuperUser', 'updateSuperUserPermissions', 'deleteSuperUser'],
     default: ['createBlog', 'updateBlog', 'deleteBlog'],
   },
   image: {

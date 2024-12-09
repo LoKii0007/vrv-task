@@ -4,29 +4,27 @@ import toast from "react-hot-toast";
 import { useGlobal } from "../../hooks/global";
 import { useAuth } from "../../hooks/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
 
 export default function ProfileDropdown() {
   const { activeView, setActiveView } = useGlobal();
-  const { currentUser } = useAuth();
+  const { currentUser, setCurrentUser } = useAuth();
   const navigate = useNavigate();
+  const {baseUrl} = useGlobal()
 
   const handleMyBlogs = () => {
     setActiveView("userBlogs");
   };
 
-  const handleProfile = () => {
-    setActiveView("profile");
-  };
-
   const handleLogout = async () => {
     try {
-      const res = await axios.get("/api/auth/logout-user");
+      const res = await axios.get(`${baseUrl}/auth/logout-user`, {withCredentials: true, validateStatus : (status) => status < 500});
       if(res.status !== 200){
         toast.error("Logout failed");
       }
       else{
         toast.success("Logout successful");
+        sessionStorage.removeItem("user");
+        setCurrentUser(null);
         navigate("/login");
       }
     } catch (error) {
@@ -88,19 +86,7 @@ export default function ProfileDropdown() {
                 </MenuItem>
               )}
 
-              {currentUser.role === "admin" && (
-                <MenuItem>
-                  <button
-                    onClick={() => setActiveView("superUsers")}
-                    type="submit"
-                    className="block w-full px-4 py-2 text-left text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900 data-[focus]:outline-none"
-                  >
-                    Super Users
-                  </button>
-                </MenuItem>
-              )}
-
-              <MenuItem>
+              {/* <MenuItem>
                 <button
                   onClick={handleProfile}
                   type="submit"
@@ -108,7 +94,7 @@ export default function ProfileDropdown() {
                 >
                   My Profile
                 </button>
-              </MenuItem>
+              </MenuItem> */}
               <MenuItem>
                 <button
                   onClick={handleLogout}

@@ -12,16 +12,18 @@ const UserBlogs = () => {
     const {baseUrl} = useGlobal();
     const [blogs, setBlogs] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [filteredBlogs, setFilteredBlogs] = useState([]);
   
     const fetchBlogs = async () => {
       try {
         setLoading(true);
         console.log(baseUrl);
-        const res = await axios.get(`http://localhost:3000/api/get-user-blogs`, { withCredentials : true, validateStatus : (status) => status < 500 });
+        const res = await axios.get(`${baseUrl}/get-user-blogs`, { withCredentials : true, validateStatus : (status) => status < 500 });
         if(res.status !== 200) {
           toast.error(res.data.msg || "Something went wrong");
         }else{
           setBlogs(res.data.blogs);
+          setFilteredBlogs(res.data.blogs);
         }
       } catch (error) {
         console.log(error);
@@ -36,14 +38,19 @@ const UserBlogs = () => {
     }, []);
   
     useEffect(() => {
-      console.log(blogs);
+      console.log('blogs updated');
+      setFilteredBlogs(blogs);
     }, [blogs]);
+
+    useEffect(() => {
+      console.log('filteredBlogs updated');
+    }, [filteredBlogs]);
 
   return (
     <>
-        <div className="user-blogs grid grid-cols-4 gap-5">
-            {blogs &&blogs.length > 0 ? blogs.map((blog, index) => (
-                <UserBlogCard blog={blog} key={index} blogs={blogs} setBlogs={setBlogs} />
+        <div className="user-blogs flex flex-wrap justify-evenly gap-5">
+            {filteredBlogs &&filteredBlogs.length > 0 ? filteredBlogs.map((blog, index) => (  
+                <UserBlogCard blog={blog} key={index} blogs={blogs} setBlogs={setBlogs} setFilteredBlogs={setFilteredBlogs} filteredBlogs={filteredBlogs} />
             )) : <div className="text-2xl font-bold text-center">You have no blogs yet</div>}
         </div>
     </>

@@ -5,6 +5,8 @@ import toast from 'react-hot-toast'
 import { useGlobal } from '../hooks/global';
 import UserBlogs from '../components/UserBlogs';
 import AllUsers from '../components/AllUsers';
+import { useAuth } from '../hooks/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
 
@@ -12,6 +14,8 @@ const Home = () => {
   const [filteredBlogs, setFilteredBlogs] = useState([]);
   const [loading, setLoading] = useState(false);
   const {activeView, setActiveView, activeBlog} = useGlobal();
+  const {currentUser, setCurrentUser} = useAuth();
+  const navigate = useNavigate();
 
   const fetchBlogs = async () => {
     try {
@@ -32,8 +36,18 @@ const Home = () => {
   }
 
   useEffect(() => {
-    fetchBlogs();
-  }, []);
+    if(currentUser){
+      fetchBlogs();
+    }else{
+      const data = JSON.parse(sessionStorage.getItem('user'));
+      if(data){
+        setCurrentUser(data);
+        fetchBlogs();
+      }else{
+        navigate('/login');
+      }
+    }
+  }, [currentUser]);
 
   useEffect(() => {
     
@@ -48,14 +62,18 @@ const Home = () => {
     }
   }, [activeBlog]);
 
+  useEffect(() => {
+    console.log(filteredBlogs);
+  }, [filteredBlogs]);
+
   return (
     <>
-      <div className="home-wrapper p-12 w-full mt-[80px] ">
+      <div className="home-wrapper p-5 sm:p-12 w-full mt-[80px] ">
 
           {activeView === "all" && (
-            <div className="home grid grid-cols-4 gap-5">
+            <div className="home flex flex-wrap justify-evenly gap-5">
             { loading ? <div className="text-2xl font-bold text-center">Loading...</div> : filteredBlogs && filteredBlogs.length > 0 ? filteredBlogs.map((blog, index ) => (
-              <BlogCard blog={blog} key={index} blogs={blogs} setBlogs={setBlogs} />
+              <BlogCard blog={blog} key={index} blogs={blogs} setBlogs={setBlogs} setFilteredBlogs={setFilteredBlogs} />
             )) : <div className="text-2xl font-bold text-center">No blogs found</div> 
             }
           </div>

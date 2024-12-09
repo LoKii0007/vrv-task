@@ -13,10 +13,10 @@ cloudinary.config({
 
 const createBlog = async (req, res) => {
     try {
-        const { title, description, tags, category } = req.body;
+        const { title, description, category } = req.body;
         const userId = req.user.userId;
 
-        if(!userId || !title || !description || !tags) {
+        if(!userId || !title || !description ) {
             return res.status(400).json({ msg: "All fields are required" });
         }
 
@@ -40,7 +40,7 @@ const createBlog = async (req, res) => {
                   .json({ msg: "Cloudinary upload failed", error: error.message });
               }
               imageUrl = result.secure_url;
-              const blog = await blogSchema.create({ title, description, image: imageUrl, tags, category, userId });
+              const blog = await blogSchema.create({ title, description, image: imageUrl, category, userId });
               res.status(201).json(blog); 
             }
           );
@@ -151,8 +151,7 @@ const getUserBlogs = async (req, res) => {
 
 const deleteBlog = async (req, res) => {
     try {
-        const { blogId } = req.query;
-        console.log(blogId);
+        const { blogId } = req.body;
         const userId = req.user.userId;
 
         if(!blogId || !userId) {
@@ -164,8 +163,8 @@ const deleteBlog = async (req, res) => {
         if(!blog) {
             return res.status(404).json({ msg: "Blog not found" });
         }
-        if(!user) {
-            return res.status(404).json({ msg: "User not found" });
+        if(!user.permissions.includes("deleteBlog")) {
+            return res.status(404).json({ msg: "You are not authorized to delete this blog" });
         }
 
         if(blog.userId.toString() === userId.toString() || (user.role === "superUser" && user.permissions.includes("deleteOtherBlogs")) || (user.role === "admin") ) {
@@ -226,29 +225,27 @@ const updateBlog = async (req, res) => {
                     const imageUrl = result.secure_url;
 
                     // Update blog with image
-                    await blogSchema.findByIdAndUpdate(blogId, {
+                    const newBlog = await blogSchema.findByIdAndUpdate(blogId, {
                         title,
                         description,
                         author,
-                        tags,
                         image: imageUrl,
                         userId,
-                    });
-                    return res.status(200).json({ msg: "Blog updated successfully", blog });
+                    }, { new: true });
+                    return res.status(200).json({ msg: "Blog updated successfully", blog: newBlog });
                 }
             );
 
             streamifier.createReadStream(imageBuffer).pipe(uploadStream);
         } else {
             // Update blog without image
-            await blogSchema.findByIdAndUpdate(blogId, {
+            const newBlog = await blogSchema.findByIdAndUpdate(blogId, {
                 title,
                 description,
                 author,
-                tags,
                 userId,
-            });
-            return res.status(200).json({ msg: "Blog updated successfully", blog });
+            }, { new: true });
+            return res.status(200).json({ msg: "Blog updated successfully", blog: newBlog });
         }
     } catch (error) {
         console.error("Error in updateBlog API:", error.message);

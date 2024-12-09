@@ -18,7 +18,7 @@ function Login() {
     setLoading(true);
     try {
       const res = await axios.post(
-        `http://localhost:3000/api/auth/login`,
+        `${baseUrl}/auth/login`,
         { email, password },
         { withCredentials: true, validateStatus: function (status) {
           return status < 500; 
@@ -27,7 +27,7 @@ function Login() {
       console.log(res.data)
       if (res.status === 200) {
         setCurrentUser(res.data.user); //? setting up current user
-        sessionStorage.setItem('proppedUpUser',JSON.stringify(res.data.user))
+        sessionStorage.setItem('user',JSON.stringify(res.data.user))
         toast.success("User logged in Successfully");
         navigate("/"); //? navigate to home page
       } else {

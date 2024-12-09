@@ -3,10 +3,12 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import { useAuth } from "../hooks/AuthContext";
 import Dropdown from "./ui/Dropdown";
+import { useGlobal } from "../hooks/global";
 
 
-const BlogCard = ({blog, blogs, setBlogs}) => {
+const BlogCard = ({blog, blogs, setBlogs, setFilteredBlogs}) => {
   const {currentUser} = useAuth();
+  const { baseUrl } = useGlobal();
   const [like, setLike] = useState(blog?.upVotes?.includes(currentUser?.userId));
   const [dislike, setDislike] = useState(blog?.downVotes?.includes(currentUser?.userId));
   const [likeLoading, setLikeLoading] = useState(false);
@@ -17,7 +19,7 @@ const BlogCard = ({blog, blogs, setBlogs}) => {
   const handleLike = async () => {
     try {
       setLikeLoading(true);
-      const res = await axios.post(`http://localhost:3000/api/like-blog`, { blogId : blog._id }, { withCredentials : true, validateStatus : (status) => status < 500 });
+      const res = await axios.post(`${baseUrl}/like-blog`, { blogId : blog._id }, { withCredentials : true, validateStatus : (status) => status < 500 });
       console.log(res);
       if(res.status !== 200) {
         toast.error(res.data.msg || "Something went wrong");
@@ -36,7 +38,7 @@ const BlogCard = ({blog, blogs, setBlogs}) => {
   const handleDislike = async () => {
     try {
       setDislikeLoading(true);
-      const res = await axios.post(`http://localhost:3000/api/dislike-blog`, { blogId : blog._id }, { withCredentials : true, validateStatus : (status) => status < 500 });
+      const res = await axios.post(`${baseUrl}/dislike-blog`, { blogId : blog._id }, { withCredentials : true, validateStatus : (status) => status < 500 });
       console.log(res);
       if(res.status !== 200) {
         toast.error(res.data.msg || "Something went wrong");
@@ -58,10 +60,10 @@ const BlogCard = ({blog, blogs, setBlogs}) => {
 
   return (
     <>
-      <button className="card bg-gray-100 shadow-md rounded-lg p-2 relative ">
+      <button className="card bg-[#f5f5f5] shadow-md rounded-lg p-2 relative ">
         {(currentUser?.role === 'admin' || currentUser?.role === 'superUser') && (
           <div className="absolute top-0 right-0 rounded-full p-1 cursor-pointer ">
-            <Dropdown blogId={blog._id} blogs={blogs} setBlogs={setBlogs} />
+            <Dropdown blogId={blog._id} blogs={blogs} setBlogs={setBlogs} setFilteredBlogs={setFilteredBlogs} />
           </div>
         )}
         <div className="card-top flex justify-center ">
@@ -69,8 +71,8 @@ const BlogCard = ({blog, blogs, setBlogs}) => {
         </div>
         <div className="card-bottom md:px-4 flex flex-col gap-3 py-2">
           <div className="card-head font-semibold text-lg flex flex-col justify-between">
-            <div className="text-gray-800 text-lg text-ellipsis whitespace-nowrap overflow-hidden" >{blog.title}</div>
-            <div className="text-gray-500 text-sm " >{blog.description}</div>
+            <div className="text-gray-800 text-lg text-ellipsis whitespace-nowrap overflow-hidden capitalize text-left " >{blog.title}</div>
+            <div className="text-gray-500 text-sm text-left  " >{blog.description}</div>
           </div>
           <div className="card-body md:text-base text-xs flex gap-4 ">
             <button disabled={likeLoading} className={`flex items-center gap-2 ${like ? "bg-blue-300" : ""}`} onClick={handleLike}><img src="/svg/like.svg" alt="" />{like ? blog.upVotes.length + 1 : blog.upVotes.length}</button>

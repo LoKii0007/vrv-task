@@ -358,10 +358,14 @@ const deleteUser = async (req, res) => {
     const { userId } = req.body;
 
     // Find the admin user by ID
-    const user = await SuperUser.findById(req.user.userId);
+    const requestingUser = await User.findById(req.user.userId);
 
-    if (!user || (user.role !== "admin" && user.role !== "superuser")) {
+    if (!requestingUser || (requestingUser.role !== "admin" && requestingUser.role !== "superUser")) {
       return res.status(403).json({ msg: "Unauthorized or user not found" });
+    }
+
+    if( requestingUser.role === "superUser" && !requestingUser.permissions.includes("deleteUsers")){
+      return res.status(403).json({ msg: "Unauthorized" });
     }
 
     const deleted = await User.findByIdAndDelete(userId);

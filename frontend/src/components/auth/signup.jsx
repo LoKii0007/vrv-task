@@ -29,13 +29,14 @@ function Register() {
 
     try {
         console.log(baseUrl);
-      const res = await axios.post(`http://localhost:3000/api/auth/sign-up`, userData, {
+      const res = await axios.post(`${baseUrl}/auth/sign-up`, userData, {
         withCredentials: true,
         validateStatus: (status) => status < 500,
       });
 
       if (res.status === 201) {
         toast.success("User registered successfully");
+        sessionStorage.setItem('user',JSON.stringify(res.data.user))
         setCurrentUser(res.data.user);
         console.log(res.data.user);
         navigate("/");

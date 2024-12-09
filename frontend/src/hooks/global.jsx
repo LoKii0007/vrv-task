@@ -9,7 +9,7 @@ export const useGlobalContext = () => {
 
 export function GlobalContextProvider({children}) {
     const [activeCategory, setActiveCategory] = useState("all");
-    const {baseUrl} = 'http://localhost:3000/api';
+    const baseUrl = 'http://localhost:3000/api';
     const [activeView, setActiveView] = useState("all");
     const [activeBlog, setActiveBlog] = useState('all');
 
