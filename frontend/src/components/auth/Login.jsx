@@ -97,7 +97,7 @@ function Login() {
                 <div className="justify-center items-center flex w-full ">
                   <div className="h-[1px] w-3/4 bg-gray-300 "></div>
                 </div>
-                <p className="text-center">Or Login with</p>
+                <p className="text-center">Or </p>
                 <div className="justify-center items-center flex w-full ">
                   <div className="h-[1px] w-3/4 bg-gray-300 "></div>
                 </div>
@@ -110,7 +110,7 @@ function Login() {
                     Sign up
                   </a>
                 </p>
-                <Link to={'/user/reset-pass'} className="text-xs text-gray-500 underline" >Forgot password</Link>
+                {/* <Link to={'/user/reset-pass'} className="text-xs text-gray-500 underline" >Forgot password</Link> */}
               </div>
             </div>
           </div>

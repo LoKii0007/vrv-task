@@ -157,10 +157,7 @@ function Register() {
                     required
                   />
                   <label className="ml-2 text-sm text-gray-600">
-                    By proceeding you agree to the{" "}
-                    <a href="/terms" className="text-green-600 hover:underline">
-                      Terms and Conditions
-                    </a>
+                    By proceeding you agree to the terms and conditions.
                   </label>
                 </div>
 
@@ -177,7 +174,7 @@ function Register() {
                 <div className="justify-center items-center flex w-full ">
                   <div className="h-[1px] w-3/4 bg-gray-300 "></div>
                 </div>
-                <p className="text-center">Or signup with</p>
+                <p className="text-center">Or</p>
                 <div className="justify-center items-center flex w-full ">
                   <div className="h-[1px] w-3/4 bg-gray-300 "></div>
                 </div>
