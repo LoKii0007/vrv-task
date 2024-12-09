@@ -21,7 +21,7 @@ const Home = () => {
   const fetchBlogs = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`${baseUrl}/api/get-all-blogs`);
+      const res = await axios.get(`${baseUrl}/get-all-blogs`);
       if(res.status !== 200) {
         toast.error(res.data.msg || "Something went wrong");
       }else{
