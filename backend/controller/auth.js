@@ -182,90 +182,6 @@ const updatePassword = async (req, res) => {
 };
 
 //? ------------------------
-//? auth update for user
-//? ------------------------
-const authUpdate = async (req, res) => {
-  try {
-    const { email, password, googleId } = req.body;
-
-    const tokenUser = await User.findById(req.user.userId);
-    if (!tokenUser) {
-      return res.status(400).json({ msg: "no user found" });
-    }
-
-    // Find the user by email
-    let user = await User.findOne({ email });
-    if (!user) {
-      return res.status(404).json({ msg: "User not found" });
-    }
-
-    if (user._id.toString() !== tokenUser._id.toString()) {
-      return res.status(404).json({ msg: "not authorized" });
-    }
-
-    // If Google ID is provided and we want to link it to an email/password account
-    if (googleId) {
-      if (user.googleId) {
-        // Check if the provided Google ID matches the existing one
-        if (user.googleId !== googleId) {
-          return res
-            .status(400)
-            .json({ msg: "Invalid Google ID for this user" });
-        }
-      } else {
-        user.googleId = googleId; // Add Google ID if it does not exist
-        user.connectedAccounts.push("Google");
-      }
-    }
-
-    // If password is provided and we want to link it to a Google-authenticated account
-    if (password) {
-      if (user.password) {
-        // Check if the provided password matches the existing one
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-          return res
-            .status(400)
-            .json({ msg: "Invalid password for this user" });
-        }
-      } else {
-        // Hash the new password and add it to the account
-        const salt = await bcrypt.genSalt(10);
-        user.password = await bcrypt.hash(password, salt);
-        user.connectedAccounts.push("Email");
-      }
-    }
-
-    // Save the updated user information
-    await user.save();
-
-    // Generate and send a new JWT token
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
-    res.cookie("authToken", token, {
-      secure: true,
-      sameSite: "None",
-      maxAge: 1000 * 60 * 60 * 24 * 30,
-    });
-
-    const userResponse = user.toObject();
-    delete userResponse.password;
-    delete userResponse.__v;
-    delete userResponse.createdAt;
-    delete userResponse.updatedAt;
-    delete userResponse.totalOrders;
-    delete userResponse.totalSpent;
-    delete userResponse._id;
-
-    res
-      .status(200)
-      .json({ msg: "User updated with new auth method", user: userResponse });
-  } catch (error) {
-    console.error("Error in authUpdate API: ", error.message);
-    res.status(500).json({ msg: "Server error" });
-  }
-};
-
-//? ------------------------
 //? signout api
 //? ------------------------
 const signOutApi = async (req, res) => {
@@ -445,22 +361,33 @@ const updateRole = async (req, res) => {
     const { userId, role } = req.body;
 
     const requestedUser = await User.findById(req.user.userId);
-    console.log(requestedUser.role);
 
-    if (!requestedUser && requestedUser.role !== "admin" && requestedUser.role !== "superUser") {
+    if (!requestedUser || (requestedUser.role !== "admin" && requestedUser.role !== "superUser")) {
       return res.status(403).json({ msg: "Unauthorized." });
     }
 
-    const user = await User.findByIdAndUpdate(userId, { role });
-    
-    if(role === "superUser"){
-      user.permissions = ["createBlog", "updateBlog", "deleteBlog", 'deleteOtherBlogs', 'updateUserPermissions']
-    }
-    if(role === "user"){
-      user.permissions = ["createBlog", "updateBlog", "deleteBlog"]
+    // Validate that the new role is valid
+    const validRoles = ["user", "superUser", "admin"];
+    if (!validRoles.includes(role)) {
+      return res.status(400).json({ msg: "Invalid role specified" });
     }
 
-    await user.save();
+    const user = await User.findByIdAndUpdate(
+      userId, 
+      { 
+        role, 
+        permissions: role === "superUser" 
+          ? ["createBlog", "updateBlog", "deleteBlog", 'deleteOtherBlogs', 'updateUserPermissions']
+          : role === "user"
+            ? ["createBlog", "updateBlog", "deleteBlog"]
+            : []
+      },
+      { new: true } // This ensures the updated document is returned
+    );
+
+    if (!user) {
+      return res.status(404).json({ msg: "User not found" });
+    }
 
     res.status(200).json({ msg: "User role updated", user });
   } catch (error) {
@@ -497,7 +424,6 @@ module.exports = {
   getUserByToken,
   updatePassword,
   signOutApi,
-  authUpdate,
   sendOtp,
   resetPassword,
   createSuperUser,
