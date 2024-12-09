@@ -163,8 +163,13 @@ const deleteBlog = async (req, res) => {
         if(!blog) {
             return res.status(404).json({ msg: "Blog not found" });
         }
-        if(!user.permissions.includes("deleteBlog")) {
+
+        if( user.role === 'user' && !user.permissions.includes("deleteBlog")) {
             return res.status(404).json({ msg: "You are not authorized to delete this blog" });
+        }
+
+        if( user.role === 'superUser' && !user.permissions.includes("deleteOtherBlogs")) {
+            return res.status(404).json({ msg: "You are not authorized to delete blogs" });
         }
 
         if(blog.userId.toString() === userId.toString() || (user.role === "superUser" && user.permissions.includes("deleteOtherBlogs")) || (user.role === "admin") ) {
@@ -204,7 +209,7 @@ const updateBlog = async (req, res) => {
         }
 
         // Check user permissions
-        if (!user.blogs.includes(blogId) && !user.permissions.includes("updateBlog")) {
+        if (!user.permissions.includes("updateBlog")) {
             return res.status(403).json({ msg: "You are not authorized to update this blog" });
         }
 
