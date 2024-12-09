@@ -2,6 +2,10 @@
 
 This project is a full-stack blog website where users can create, update, and delete blogs. It includes a Role-Based Access Control (RBAC) system with three types of users: **User**, **SuperUser**, and **Admin**, each with distinct permissions. The application is built with a React.js frontend and a Node.js backend.
 
+Test admin credentials
+username - loki@gmail.com
+password - 123456
+
 
 ## Features
 
