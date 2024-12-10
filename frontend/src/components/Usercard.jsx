@@ -47,7 +47,7 @@ const Usercard = ({ user, setUsers, index }) => {
             {user.firstName} {user.lastName}
           </div>
           <div className="overflow-hidden text-ellipsis w-full ">
-            <button className="border rounded-md px-2 py-1 w-full" onClick={() => setOpen(true)}>Edit</button>
+            <button className="border rounded-md px-2 py-1 w-full text-left " onClick={() => setOpen(true)}>Edit</button>
             <PermissionsModal user={user} setUsers={setUsers} open={open} setOpen={setOpen} />
           </div>
           <div className=" w-full">
